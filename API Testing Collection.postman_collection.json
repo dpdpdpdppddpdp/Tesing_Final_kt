@@ -1,0 +1,979 @@
+{
+	"info": {
+		"_postman_id": "8eab494a-4803-4528-82a1-ef58018ed992",
+		"name": "API Testing Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48181391",
+		"_collection_link": "https://pashakan-5345298.postman.co/workspace/API-Testing-Workspace~045108ab-1a46-463d-aff6-44db41fe5579/collection/48181391-8eab494a-4803-4528-82a1-ef58018ed992?action=share&source=collection_link&creator=48181391"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Базовые проверки\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Проверка структуры ответа\r",
+									"pm.test(\"Refresh returns new tokens\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('access_token');\r",
+									"    pm.expect(response).to.have.property('refresh_token');\r",
+									"});\r",
+									"\r",
+									"// Обновление токенов\r",
+									"pm.test(\"Update environment variables\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.environment.set(\"auth_token\", response.access_token);\r",
+									"    pm.environment.set(\"refresh_token\", response.refresh_token);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refresh_token\": \"{{refresh_token}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Базовые проверки\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Очистка токенов\r",
+									"pm.test(\"Clear tokens\", function () {\r",
+									"    pm.environment.set(\"auth_token\", \"\");\r",
+									"    pm.environment.set(\"refresh_token\", \"\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{admin_email}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Базовые проверки\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Проверка структуры ответа\r",
+									"pm.test(\"Login returns auth token\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('access_token');\r",
+									"    pm.expect(response).to.have.property('refresh_token');\r",
+									"    pm.expect(response.access_token).to.be.a('string');\r",
+									"    pm.expect(response.refresh_token).to.be.a('string');\r",
+									"});\r",
+									"\r",
+									"// Сохранение токенов в переменные\r",
+									"pm.test(\"Set environment variables\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.environment.set(\"auth_token\", response.access_token);\r",
+									"    pm.environment.set(\"refresh_token\", response.refresh_token);\r",
+									"});\r",
+									"\r",
+									"// JSON Schema валидация\r",
+									"const loginSchema = {\r",
+									"    \"type\": \"object\",\r",
+									"    \"properties\": {\r",
+									"        \"access_token\": {\"type\": \"string\"},\r",
+									"        \"refresh_token\": {\"type\": \"string\"},\r",
+									"        \"expires_in\": {\"type\": \"number\"}\r",
+									"    },\r",
+									"    \"required\": [\"access_token\", \"refresh_token\"]\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response matches JSON schema\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    const validation = tv4.validate(response, loginSchema);\r",
+									"    pm.expect(validation).to.be.true;\r",
+									"    if (!validation) {\r",
+									"        console.log(\"Validation errors:\", tv4.error);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{admin_email}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Базовые проверки\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"// Проверка структуры ответа для массива\r",
+									"pm.test(\"Response has pagination structure\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('data');\r",
+									"    pm.expect(response).to.have.property('total');\r",
+									"    pm.expect(response).to.have.property('page');\r",
+									"    pm.expect(response).to.have.property('limit');\r",
+									"    pm.expect(Array.isArray(response.data)).to.be.true;\r",
+									"});\r",
+									"\r",
+									"// JSON Schema валидация для пользователя\r",
+									"const userSchema = {\r",
+									"    \"type\": \"object\",\r",
+									"    \"properties\": {\r",
+									"        \"id\": {\"type\": \"number\"},\r",
+									"        \"name\": {\"type\": \"string\"},\r",
+									"        \"email\": {\"type\": \"string\", \"format\": \"email\"},\r",
+									"        \"createdAt\": {\"type\": \"string\", \"format\": \"date-time\"},\r",
+									"        \"updatedAt\": {\"type\": \"string\", \"format\": \"date-time\"}\r",
+									"    },\r",
+									"    \"required\": [\"id\", \"name\", \"email\", \"createdAt\"]\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Users match JSON schema\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.data && response.data.length > 0) {\r",
+									"        const validation = tv4.validate(response.data[0], userSchema);\r",
+									"        pm.expect(validation).to.be.true;\r",
+									"        if (!validation) {\r",
+									"            console.log(\"Validation errors:\", tv4.error);\r",
+									"        }\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Security headers проверка\r",
+									"pm.test(\"Security headers are present\", function () {\r",
+									"    pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.eql('nosniff');\r",
+									"    pm.expect(pm.response.headers.get('X-Frame-Options')).to.eql('DENY');\r",
+									"    pm.expect(pm.response.headers.get('X-XSS-Protection')).to.eql('1; mode=block');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверка успешного создания\r",
+									"pm.test(\"✅ Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Проверка структуры ответа\r",
+									"pm.test(\"✅ Response has user data\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response).to.have.property('name');\r",
+									"    pm.expect(response).to.have.property('email');\r",
+									"});\r",
+									"\r",
+									"// Сохранение ID созданного пользователя\r",
+									"pm.test(\"✅ Save user ID to environment\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.environment.set(\"user_id\", response.id);\r",
+									"    console.log(\"Created user ID:\", response.id);\r",
+									"    \r",
+									"    // Проверка что ID валидный\r",
+									"    pm.expect(response.id).to.be.a('number');\r",
+									"    pm.expect(response.id).to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"// Проверка что email соответствует формату\r",
+									"pm.test(\"✅ Email format is valid\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);\r",
+									"});\r",
+									"\r",
+									"// Проверка времени ответа\r",
+									"pm.test(\"✅ Response time is acceptable\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test User {{$randomFirstName}}\",\r\n  \"email\": \"test{{$timestamp}}@example.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"user\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Базовые проверки\r",
+									"pm.test(\"✅ Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Проверка структуры ответа для объекта\r",
+									"pm.test(\"✅ Response has correct user structure\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    \r",
+									"    // Обязательные поля\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response).to.have.property('name');\r",
+									"    pm.expect(response).to.have.property('email');\r",
+									"    pm.expect(response).to.have.property('createdAt');\r",
+									"    \r",
+									"    // Дополнительные поля (если есть)\r",
+									"    pm.expect(response.id).to.be.a('number');\r",
+									"    pm.expect(response.name).to.be.a('string');\r",
+									"    pm.expect(response.email).to.include('@');\r",
+									"    \r",
+									"    // Проверка, что ID в ответе совпадает с запрошенным\r",
+									"    const requestedUserId = pm.environment.get(\"user_id\");\r",
+									"    if (requestedUserId) {\r",
+									"        pm.expect(response.id.toString()).to.eql(requestedUserId);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Валидация по JSON Schema\r",
+									"pm.test(\"✅ User data matches schema\", function () {\r",
+									"    const userSchema = {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"            \"id\": {\"type\": \"number\"},\r",
+									"            \"name\": {\"type\": \"string\"},\r",
+									"            \"email\": {\"type\": \"string\", \"format\": \"email\"},\r",
+									"            \"createdAt\": {\"type\": \"string\", \"format\": \"date-time\"},\r",
+									"            \"updatedAt\": {\"type\": \"string\", \"format\": \"date-time\"}\r",
+									"        },\r",
+									"        \"required\": [\"id\", \"name\", \"email\", \"createdAt\"]\r",
+									"    };\r",
+									"    \r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(tv4.validate(response, userSchema)).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✅ Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"✅ User updated successfully\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    const requestBody = JSON.parse(pm.request.body.raw);\r",
+									"    \r",
+									"    // Проверка что данные обновились\r",
+									"    pm.expect(response.name).to.eql(requestBody.name);\r",
+									"    pm.expect(response.email).to.eql(requestBody.email);\r",
+									"    \r",
+									"    // Проверка что updatedAt изменился\r",
+									"    pm.expect(response).to.have.property('updatedAt');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"✅ Response structure remains consistent\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    \r",
+									"    // Все обязательные поля на месте\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response).to.have.property('name'); \r",
+									"    pm.expect(response).to.have.property('email');\r",
+									"    pm.expect(response).to.have.property('createdAt');\r",
+									"    pm.expect(response).to.have.property('updatedAt');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Updated User {{$timestamp}}\",\r\n  \"email\": \"updated{{$timestamp}}@example.com\",\r\n  \"role\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✅ Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Очистка user_id после удаления\r",
+									"pm.test(\"✅ Clear user ID from environment\", function () {\r",
+									"    pm.environment.set(\"user_id\", \"\");\r",
+									"    console.log(\"User ID cleared from environment\");\r",
+									"});\r",
+									"\r",
+									"// Проверка что тело ответа пустое (для 204)\r",
+									"pm.test(\"✅ Response body is empty for 204\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.empty;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Эндпоинты для управления пользователями"
+		},
+		{
+			"name": "🔗 Chained User Flow",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"🔑 Login successful - Step 1/7\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json();\r",
+									"    \r",
+									"    // Сохраняем токены\r",
+									"    pm.environment.set(\"auth_token\", response.access_token);\r",
+									"    pm.environment.set(\"refresh_token\", response.refresh_token);\r",
+									"    \r",
+									"    // Проверяем что токены валидны\r",
+									"    pm.expect(response.access_token).to.be.a('string');\r",
+									"    pm.expect(response.access_token.length).to.be.above(10);\r",
+									"    \r",
+									"    console.log(\"✅ Login successful, token saved\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"👤 Create User - Step 2/7\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    const response = pm.response.json();\r",
+									"    \r",
+									"    // Сохраняем ID пользователя\r",
+									"    pm.environment.set(\"user_id\", response.id);\r",
+									"    \r",
+									"    // Проверяем данные пользователя\r",
+									"    pm.expect(response.id).to.be.a('number');\r",
+									"    pm.expect(response.name).to.be.a('string');\r",
+									"    pm.expect(response.email).to.include('@');\r",
+									"    \r",
+									"    console.log(\"✅ User created with ID:\", response.id);\r",
+									"    \r",
+									"    // Сохраняем оригинальные данные для последующих проверок\r",
+									"    pm.environment.set(\"original_user_name\", response.name);\r",
+									"    pm.environment.set(\"original_user_email\", response.email);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test User {{$randomFirstName}}\",\n  \"email\": \"test{{$timestamp}}@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"📋 Get User - Step 3/7\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json();\r",
+									"    const userId = pm.environment.get(\"user_id\");\r",
+									"    \r",
+									"    // Проверяем что получили того же пользователя\r",
+									"    pm.expect(response.id.toString()).to.eql(userId);\r",
+									"    \r",
+									"    // Сравниваем с оригинальными данными\r",
+									"    const originalName = pm.environment.get(\"original_user_name\");\r",
+									"    const originalEmail = pm.environment.get(\"original_user_email\");\r",
+									"    \r",
+									"    pm.expect(response.name).to.eql(originalName);\r",
+									"    pm.expect(response.email).to.eql(originalEmail);\r",
+									"    \r",
+									"    console.log(\"✅ User retrieval verified\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✏️ Update User - Step 4/7\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json();\r",
+									"    const requestBody = JSON.parse(pm.request.body.raw);\r",
+									"    \r",
+									"    // Проверяем что данные обновились\r",
+									"    pm.expect(response.name).to.eql(requestBody.name);\r",
+									"    pm.expect(response.email).to.eql(requestBody.email);\r",
+									"    \r",
+									"    // Сохраняем обновленные данные\r",
+									"    pm.environment.set(\"updated_user_name\", response.name);\r",
+									"    pm.environment.set(\"updated_user_email\", response.email);\r",
+									"    \r",
+									"    console.log(\"✅ User updated successfully\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"UPDATED_USER_{{$timestamp}}\",\r\n  \"email\": \"updated_{{$timestamp}}@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Update",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"🗑️ Delete User - Step 6/7\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"    \r",
+									"    console.log(\"✅ User deleted successfully\");\r",
+									"    \r",
+									"    // Пока не очищаем user_id - он понадобится для проверки удаления\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Deletion",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
+			"description": "`Полный жизненный цикл пользователя: создание → чтение → обновление → удаление`"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"// Pre-request Script - исправленная версия\r",
+					"const token = pm.environment.get(\"auth_token\");\r",
+					"\r",
+					"// Удаляем старый Authorization header если есть\r",
+					"const headers = pm.request.headers;\r",
+					"const authHeader = headers.find(header => header.key === \"Authorization\");\r",
+					"if (authHeader) {\r",
+					"    headers.remove(authHeader);\r",
+					"}\r",
+					"\r",
+					"// Добавляем новый только если токен есть\r",
+					"if (token && token !== \"\") {\r",
+					"    pm.request.headers.add({\r",
+					"        key: \"Authorization\",\r",
+					"        value: `Bearer ${token}`\r",
+					"    });\r",
+					"}\r",
+					"\r",
+					"console.log(\"Base URL:\", pm.environment.get(\"base_url\"));\r",
+					"console.log(\"Auth Token:\", token ? \"***present***\" : \"missing\");"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "admin_email",
+			"value": ""
+		},
+		{
+			"key": "admin_password",
+			"value": ""
+		},
+		{
+			"key": "timeout",
+			"value": ""
+		}
+	]
+}
